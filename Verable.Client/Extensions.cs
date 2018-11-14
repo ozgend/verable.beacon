@@ -5,13 +5,13 @@ namespace Verable.Client
 {
     internal static class Extensions
     {
-        private static Random _random = new Random();
+        private static readonly Random _random = new Random();
 
-        public static string GetSingleBeaconEndpoint(this Config config)
+        public static string GetSingleBeaconEndpoint(this Settings config)
         {
-            return config.BeaconEndpoint?.Length == 1
-                ? config.BeaconEndpoint[0]
-                : config.BeaconEndpoint[_random.Next(config.BeaconEndpoint.Length)];
+            return config.Target?.Count== 1
+                ? config.Target[0]
+                : config.Target?[_random.Next(config.Target.Count)];
 
         }
     }
