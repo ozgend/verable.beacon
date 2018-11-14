@@ -1,0 +1,11 @@
+{
+    "name": "verable.beacon",
+    "version": "1.0.0",
+    "description": "verable beacon service",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "author": "ozgend",
+    "license": "MIT"
+}
