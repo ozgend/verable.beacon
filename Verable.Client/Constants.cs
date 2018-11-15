@@ -15,7 +15,8 @@ namespace Verable.Client
         {
             public const string Register = "REG";
             public const string Deregister = "DRG";
-            public const string List = "LST";
+            public const string DiscoverOne = "DS1";
+            public const string DiscoverAll = "DSA";
             public const string Heartbeat = "HRB";
             public const string Seperator = "|";
         }

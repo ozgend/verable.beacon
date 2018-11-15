@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Verable.Client;
 using Verable.Client.Contracts;
 
@@ -19,23 +20,25 @@ namespace Service1
                            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
             _configuration = builder.Build();
-            
-        
+
             _verableBeacon = VerableBeacon.Init(_configuration);
-            
+
             Console.WriteLine("running");
 
-            var serviceDefinition1 = new ServiceDefinition { Endpoint = new Uri("http://localhost:6601"), Name = "Service1", Version = "1.0" };
-            var serviceDefinition2 = new ServiceDefinition { Endpoint = new Uri("http://localhost:6602"), Name = "Service2", Version = "1.0" };
-            var serviceDefinition3 = new ServiceDefinition { Endpoint = new Uri("http://localhost:6603"), Name = "Service2", Version = "1.1" };
+            var definition = new ServiceDefinition { Endpoint = new Uri("http://localhost:6601"), Name = "Service1", Version = "1.0" };
+            var id = await _verableBeacon.Register(definition);
+            Console.WriteLine($"Register {definition.Name} id:{id}");
 
-            await _verableBeacon.Register(serviceDefinition1);
-            await _verableBeacon.Register(serviceDefinition2);
-            await _verableBeacon.Register(serviceDefinition3);
+            var definiton1 = await _verableBeacon.DiscoverOne("Service1");
+            Console.WriteLine($"Discover Service1: {JsonConvert.SerializeObject(definiton1)}");
 
-            var definiton = await _verableBeacon.List("Service2");
+            var definitonAll = await _verableBeacon.DiscoverAll();
+            Console.WriteLine($"Discover All: {JsonConvert.SerializeObject(definitonAll)}");
 
-            
+            await _verableBeacon.Deregister();
+            Console.WriteLine("Deregister");
+
+            Console.WriteLine("awaiting...");
             Console.ReadLine();
         }
     }

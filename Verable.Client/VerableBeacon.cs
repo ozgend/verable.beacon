@@ -13,39 +13,64 @@ namespace Verable.Client
 {
     public class VerableBeacon
     {
-        private Settings _config;
+        private Settings _settings = new Settings();
         private static VerableBeacon _instance;
+        public string RegistrationId;
 
         public static VerableBeacon Init(IConfiguration configuration)
         {
             if (_instance == null)
             {
-                _instance = new VerableBeacon();
-                _instance._config = new Settings();
-                configuration.Bind("Verable", _instance._config);
+                _instance = new VerableBeacon(configuration);
             }
 
             return _instance;
         }
 
-
-        public async Task Register(ServiceDefinition definition)
+        public VerableBeacon(IConfiguration configuration)
         {
+            configuration.Bind("Verable", _settings);
+        }
+
+        public async Task<string> Register(ServiceDefinition definition, bool force = false)
+        {
+            if (!string.IsNullOrEmpty(RegistrationId))
+            {
+                Console.WriteLine($"Already registered with id: {RegistrationId}");
+
+                if (!force)
+                {
+                    return RegistrationId;
+                }
+
+                await Deregister(RegistrationId);
+            }
             var request = Pack(Constants.Command.Register, definition, true);
-            await Send(request);
+            var response = await Send(request);
+            RegistrationId = Unpack<string>(response);
+            return RegistrationId;
         }
 
-        public async Task Deregister(ServiceDefinition definition)
+        public async Task Deregister(string registrationId = null)
         {
-            var request = Pack(Constants.Command.Deregister, definition, true);
+            var request = Pack(Constants.Command.Deregister, registrationId ?? RegistrationId);
             await Send(request);
+            RegistrationId = null;
         }
 
-        public async Task<List<ServiceDefinition>> List(string name)
+        public async Task<List<ServiceDefinition>> DiscoverOne(string name)
         {
-            var request = Pack(Constants.Command.List, name);
+            var request = Pack(Constants.Command.DiscoverOne, name);
             var response = await Send(request);
             var result = Unpack<List<ServiceDefinition>>(response, true);
+            return result;
+        }
+
+        public async Task<Dictionary<string, List<ServiceDefinition>>> DiscoverAll()
+        {
+            var request = Pack(Constants.Command.DiscoverAll);
+            var response = await Send(request);
+            var result = Unpack<Dictionary<string, List<ServiceDefinition>>>(response, true);
             return result;
         }
 
@@ -54,7 +79,7 @@ namespace Verable.Client
             try
             {
                 IPAddress ipAddress = null;
-                var singleEndpoint = _instance._config.GetSingleBeaconEndpoint();
+                var singleEndpoint = _instance._settings.GetSingleBeaconEndpoint();
                 var beaconEndpoint = new Uri(singleEndpoint);
                 var ipAddressList = Dns.GetHostAddresses(beaconEndpoint.DnsSafeHost);
 
