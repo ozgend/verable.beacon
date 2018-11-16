@@ -1,11 +1,12 @@
 const Constants = require('./utils/constants');
 const BeaconService = require('./services/beacon-service');
 const netSocket = require('net');
+const port = process.env.PORT || Constants.Port;
 
 var beaconService = new BeaconService();
 
 function onListen() {
-    console.log('listening on ', Constants.Port);
+    console.log('listening on ', port);
 }
 
 function onConnection(socket) {

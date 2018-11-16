@@ -1,7 +1,14 @@
 const Helper = require('../utils/helper');
 const Constants = require('../utils/constants');
 const AsyncRedis = require('async-redis');
-const redisClient = AsyncRedis.createClient();
+
+var redisClient;
+
+if (process.env.REDIS_ENDPOINT) {
+    redisClient = AsyncRedis.createClient('redis://' + process.env.REDIS);
+} else {
+    redisClient = AsyncRedis.createClient();
+}
 
 redisClient.on('error', function(err) {
     console.log('redisClient' + err);
