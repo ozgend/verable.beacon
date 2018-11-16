@@ -7,6 +7,6 @@ services:
     environment:
       NODE_ENV: development
     ports:
-      - 7001:7001
+      - 9009:9009
       - 9229:9229
     command: node --inspect=0.0.0.0:9229 server.js

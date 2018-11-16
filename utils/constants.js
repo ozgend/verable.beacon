@@ -1,6 +1,6 @@
 var Constants = {
 
-    Port: 7001,
+    Port: 9009,
 
     Commands: {
         Register: 'REG',
