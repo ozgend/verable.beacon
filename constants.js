@@ -1,4 +1,6 @@
-var Constants = {
+module.exports = {
+
+    Port: 7001,
 
     Commands: {
         Register: 'REG',
@@ -6,8 +8,9 @@ var Constants = {
         DiscoverOne: 'DS1',
         DiscoverAll: 'DSA',
         Heartbeat: 'HRB'
+
     },
-    
+
     // CMD|0|....
     Parser: {
         Seperator: '|',
@@ -16,9 +19,7 @@ var Constants = {
         SerializedLength: 1,
         CommandStartIndex: 0,
         SerializedStartIndex: 4,
-        DataStartIndex: 6,
+        DataStartIndex: 6
     }
-}
 
-module.exports = Constants;
-
+};

@@ -1,4 +1,5 @@
-const Constants = require('./constants');
+const Utilities = require('../utilities');
+const Constants = require('../constants');
 const RegistryService = require('./registry-service');
 
 class BeaconService {
@@ -32,7 +33,7 @@ class BeaconService {
 
     async prepareSend(data) {
         // console.log('[prepareSend] -> %j', data);
-       
+
         var encoded = this._pack(data);
         return encoded;
     }
@@ -54,7 +55,7 @@ class BeaconService {
     _unpack(encoded) {
         var stringified = Buffer.from(encoded, 'base64').toString('ascii');
         stringified = Buffer.from(stringified, 'base64').toString('ascii');
-        
+
         // var encodedBuffer = new Buffer(encoded.toString(), 'base64');
         // var stringified = encodedBuffer.toString('ascii');       
 

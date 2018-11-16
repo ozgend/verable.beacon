@@ -1,8 +1,9 @@
-const Utilities = require('./utilities');
+const Utilities = require('../utilities');
 const AsyncRedis = require('async-redis');
+
 const redisClient = AsyncRedis.createClient();
 
-redisClient.on('error', function (err) {
+redisClient.on('error', function(err) {
     console.log('redisClient' + err);
 });
 

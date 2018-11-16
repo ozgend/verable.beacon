@@ -1,12 +1,11 @@
-const port = 7001;
-const BeaconService = require('./beacon-service');
+const Constants = require('./constants');
+const BeaconService = require('./service/beacon-service');
+const netSocket = require('net');
+
 var beaconService = new BeaconService();
 
-var server = require('net').createServer(onConnection);
-server.listen(port, onListen);
-
 function onListen() {
-    console.log('listening', server.address());
+    console.log('listening on ', Constants.Port);
 }
 
 function onConnection(socket) {
@@ -14,7 +13,7 @@ function onConnection(socket) {
 
     // console.log('[%s] connected', clientEndpoint);
 
-    socket.on('data', async function (data) {
+    socket.on('data', async function(data) {
         // console.log('[%s] -> %s', clientEndpoint, data);
 
         var processedResult = await beaconService.processReceived(data);
@@ -25,15 +24,17 @@ function onConnection(socket) {
         socket.end();
     });
 
-    socket.on('end', function () {
+    socket.on('end', function() {
         // console.log('[%s] end', clientEndpoint);
     });
 
-    socket.on('close', function () {
+    socket.on('close', function() {
         // console.log('[%s] closed', clientEndpoint);
     });
 
-    socket.on('error', function (err) {
+    socket.on('error', function(err) {
         console.log('[%s] error', clientEndpoint, err);
     });
 };
+
+netSocket.createServer(onConnection).listen(Constants.Port, onListen);

@@ -1,12 +1,12 @@
 const Crypto = require('crypto');
 
-var Utilities = {
+class Utilities {
 
-    uid: function (prefix, length) {
+    static uid(prefix, length) {
         return (prefix || '') + [...Array(length || 10)].map(i => (~~(Math.random() * 36)).toString(36)).join('');
-    },
+    }
 
-    uuid: function (prefix, length) {
+    static uuid(prefix, length) {
         return (prefix || '') + Crypto.randomBytes(length).toString('hex');
     }
 
