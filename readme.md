@@ -1,2 +1,2 @@
-## verable
-### poor man's service discovery
+## verable.beacon
+### poor man's service registry
