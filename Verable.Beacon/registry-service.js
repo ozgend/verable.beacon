@@ -1,35 +1,53 @@
-var Utilities = require('./utilities');
+const Utilities = require('./utilities');
+const AsyncRedis = require('async-redis');
+const redisClient = AsyncRedis.createClient();
 
-var _registry = {};
-var _registryIdMap = {};
+redisClient.on('error', function (err) {
+    console.log('redisClient' + err);
+});
 
 class RegistryService {
 
     async discoverOne(serviceName) {
-        return _registry[serviceName] || [];
+        var serviceDefinitionList = [];
+
+        var serviceKey = 'service:' + serviceName + ':*';
+        var serviceKeys = await redisClient.keys(serviceKey);
+
+        await serviceKeys.forEach(async key => {
+            var raw = await redisClient.get(key);
+            serviceDefinitionList.push(JSON.parse(raw));
+        });
+
+        return serviceDefinitionList;
     }
 
     async discoverAll() {
-        return _registry;
+        return {};
     }
 
     async register(serviceDefinition) {
-        if (!_registry[serviceDefinition.Name]) {
-            _registry[serviceDefinition.Name] = [];
-        }
+
         var uid = Utilities.uid('v-', 12);
         serviceDefinition.Uid = uid;
-        _registry[serviceDefinition.Name].push(serviceDefinition);
-        _registryIdMap[uid] = serviceDefinition.Name;
+
+        var serviceKey = 'service:' + serviceDefinition.Name + ':' + uid;
+        var mappingKey = 'mapping:' + uid;
+
+        await redisClient.set(serviceKey, JSON.stringify(serviceDefinition));
+        await redisClient.set(mappingKey, serviceDefinition.Name);
+
         return uid;
     }
 
     async deregister(uid) {
-        if (_registryIdMap[uid]) {
-            var serviceName = _registryIdMap[uid];
-            delete _registry[serviceName];
-            delete _registryIdMap[uid];
-        }
+
+        var mappingKey = 'idmapping:' + uid;
+        var serviceName = await redisClient.get(mappingKey);
+        var serviceKey = 'service:' + serviceName + ':' + uid;
+
+        await redisClient.del(serviceKey);
+
         return uid;
     }
 

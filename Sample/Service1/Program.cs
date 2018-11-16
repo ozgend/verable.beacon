@@ -35,8 +35,8 @@ namespace Service1
             var definitonAll = await _verableBeacon.DiscoverAll();
             Console.WriteLine($"Discover All: {JsonConvert.SerializeObject(definitonAll)}");
 
-            await _verableBeacon.Deregister();
-            Console.WriteLine("Deregister");
+            //await _verableBeacon.Deregister();
+            //Console.WriteLine("Deregister");
 
             Console.WriteLine("awaiting...");
             Console.ReadLine();
