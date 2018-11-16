@@ -1,7 +1,6 @@
-const Utilities = require('../utilities');
-const Constants = require('../constants');
+const Helper = require('../utils/helper');
+const Constants = require('../utils/constants');
 const AsyncRedis = require('async-redis');
-
 const redisClient = AsyncRedis.createClient();
 
 redisClient.on('error', function(err) {
@@ -11,7 +10,7 @@ redisClient.on('error', function(err) {
 class RegistryService {
 
     async discoverOne(serviceName) {
-        const serviceKey = Utilities.buildKey(Constants.Keys.ServicePrefix, serviceName, Constants.Keys.Any);
+        const serviceKey = Helper.buildKey(Constants.Keys.ServicePrefix, serviceName, Constants.Keys.Any);
         const serviceKeys = await redisClient.keys(serviceKey);
         let serviceDefinitionList = [];
 
@@ -25,7 +24,7 @@ class RegistryService {
     }
 
     async discoverAll() {
-        const serviceKey = Utilities.buildKey(Constants.Keys.ServicePrefix, Constants.Keys.Any);
+        const serviceKey = Helper.buildKey(Constants.Keys.ServicePrefix, Constants.Keys.Any);
         const serviceKeys = await redisClient.keys(serviceKey);
         let serviceDefinitionList = [];
 
@@ -44,9 +43,9 @@ class RegistryService {
     }
 
     async register(serviceDefinition) {
-        const uid = Utilities.uid('v-', 12);
-        const serviceKey = Utilities.buildKey(Constants.Keys.ServicePrefix, serviceDefinition.Name, uid);
-        const mappingKey = Utilities.buildKey(Constants.Keys.MappingPrefix, uid);
+        const uid = Helper.uid('v-', 12);
+        const serviceKey = Helper.buildKey(Constants.Keys.ServicePrefix, serviceDefinition.Name, uid);
+        const mappingKey = Helper.buildKey(Constants.Keys.MappingPrefix, uid);
 
         serviceDefinition.Uid = uid;
 
@@ -57,9 +56,9 @@ class RegistryService {
     }
 
     async deregister(uid) {
-        const mappingKey = Utilities.buildKey(Constants.Keys.MappingPrefix, uid);
+        const mappingKey = Helper.buildKey(Constants.Keys.MappingPrefix, uid);
         const serviceName = await redisClient.get(mappingKey);
-        const serviceKey = Utilities.buildKey(Constants.Keys.ServicePrefix, serviceName, uid);
+        const serviceKey = Helper.buildKey(Constants.Keys.ServicePrefix, serviceName, uid);
 
         await redisClient.del(serviceKey);
 

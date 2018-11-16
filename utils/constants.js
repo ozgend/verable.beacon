@@ -1,4 +1,4 @@
-module.exports = {
+var Constants = {
 
     Port: 7001,
 
@@ -31,3 +31,5 @@ module.exports = {
     }
 
 };
+
+module.exports = Constants;

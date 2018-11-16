@@ -1,5 +1,5 @@
-const Constants = require('./constants');
-const BeaconService = require('./service/beacon-service');
+const Constants = require('./utils/constants');
+const BeaconService = require('./services/beacon-service');
 const netSocket = require('net');
 
 var beaconService = new BeaconService();

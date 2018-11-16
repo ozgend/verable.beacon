@@ -1,5 +1,5 @@
-const Utilities = require('../utilities');
-const Constants = require('../constants');
+const Helper = require('../utils/helper');
+const Constants = require('../utils/constants');
 const RegistryService = require('./registry-service');
 
 class BeaconService {
@@ -40,7 +40,7 @@ class BeaconService {
 
     _pack(data, requireSerialization) {
         var stringified;
-        var requireSerialization = !this._isPrimitive(data);
+        var requireSerialization = !Helper.isPrimitive(data);
 
         if (requireSerialization) {
             stringified = JSON.stringify(data);
@@ -56,9 +56,6 @@ class BeaconService {
         var stringified = Buffer.from(encoded, 'base64').toString('ascii');
         stringified = Buffer.from(stringified, 'base64').toString('ascii');
 
-        // var encodedBuffer = new Buffer(encoded.toString(), 'base64');
-        // var stringified = encodedBuffer.toString('ascii');       
-
         var command = stringified.substr(Constants.Parser.CommandStartIndex, Constants.Parser.CommandLength);
         var serialized = parseInt(stringified.substr(Constants.Parser.SerializedStartIndex, Constants.Parser.SerializedLength)) == 1;
         var data = stringified.substr(Constants.Parser.DataStartIndex);
@@ -73,10 +70,6 @@ class BeaconService {
         return result;
     }
 
-    _isPrimitive(value) {
-        var type = typeof value;
-        return value == null || (type != 'object' && type != 'function');
-    }
 }
 
 module.exports = BeaconService;

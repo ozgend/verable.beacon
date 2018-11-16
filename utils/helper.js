@@ -1,7 +1,7 @@
 const Constants = require('./constants');
 const Crypto = require('crypto');
 
-class Utilities {
+class Helper {
 
     static uid(prefix, length) {
         return (prefix || '') + [...Array(length || 10)].map(i => (~~(Math.random() * 36)).toString(36)).join('');
@@ -18,6 +18,11 @@ class Utilities {
         }
         return key;
     }
+
+    static isPrimitive(value) {
+        var type = typeof value;
+        return value == null || (type != 'object' && type != 'function');
+    }
 }
 
-module.exports = Utilities;
+module.exports = Helper;
