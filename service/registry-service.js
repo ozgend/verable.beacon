@@ -1,4 +1,5 @@
 const Utilities = require('../utilities');
+const Constants = require('../constants');
 const AsyncRedis = require('async-redis');
 
 const redisClient = AsyncRedis.createClient();
@@ -10,30 +11,44 @@ redisClient.on('error', function(err) {
 class RegistryService {
 
     async discoverOne(serviceName) {
-        var serviceDefinitionList = [];
+        const serviceKey = Utilities.buildKey(Constants.Keys.ServicePrefix, serviceName, Constants.Keys.Any);
+        const serviceKeys = await redisClient.keys(serviceKey);
+        let serviceDefinitionList = [];
 
-        var serviceKey = 'service:' + serviceName + ':*';
-        var serviceKeys = await redisClient.keys(serviceKey);
-
-        await serviceKeys.forEach(async key => {
-            var raw = await redisClient.get(key);
+        for (var i = 0; i < serviceKeys.length; i++) {
+            const key = serviceKeys[i];
+            const raw = await redisClient.get(key);
             serviceDefinitionList.push(JSON.parse(raw));
-        });
+        }
 
         return serviceDefinitionList;
     }
 
     async discoverAll() {
-        return {};
+        const serviceKey = Utilities.buildKey(Constants.Keys.ServicePrefix, Constants.Keys.Any);
+        const serviceKeys = await redisClient.keys(serviceKey);
+        let serviceDefinitionList = [];
+
+        for (var i = 0; i < serviceKeys.length; i++) {
+            const key = serviceKeys[i];
+            const raw = await redisClient.get(key);
+            serviceDefinitionList.push(JSON.parse(raw));
+        }
+
+        let serviceDefinitions = serviceDefinitionList.reduce(function(set, current) {
+            (set[current[Constants.Keys.HashName]] = set[current[Constants.Keys.HashName]] || []).push(current);
+            return set;
+        }, {});
+
+        return serviceDefinitions;
     }
 
     async register(serviceDefinition) {
+        const uid = Utilities.uid('v-', 12);
+        const serviceKey = Utilities.buildKey(Constants.Keys.ServicePrefix, serviceDefinition.Name, uid);
+        const mappingKey = Utilities.buildKey(Constants.Keys.MappingPrefix, uid);
 
-        var uid = Utilities.uid('v-', 12);
         serviceDefinition.Uid = uid;
-
-        var serviceKey = 'service:' + serviceDefinition.Name + ':' + uid;
-        var mappingKey = 'mapping:' + uid;
 
         await redisClient.set(serviceKey, JSON.stringify(serviceDefinition));
         await redisClient.set(mappingKey, serviceDefinition.Name);
@@ -42,10 +57,9 @@ class RegistryService {
     }
 
     async deregister(uid) {
-
-        var mappingKey = 'idmapping:' + uid;
-        var serviceName = await redisClient.get(mappingKey);
-        var serviceKey = 'service:' + serviceName + ':' + uid;
+        const mappingKey = Utilities.buildKey(Constants.Keys.MappingPrefix, uid);
+        const serviceName = await redisClient.get(mappingKey);
+        const serviceKey = Utilities.buildKey(Constants.Keys.ServicePrefix, serviceName, uid);
 
         await redisClient.del(serviceKey);
 

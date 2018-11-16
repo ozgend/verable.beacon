@@ -1,3 +1,4 @@
+const Constants = require('./constants');
 const Crypto = require('crypto');
 
 class Utilities {
@@ -10,6 +11,13 @@ class Utilities {
         return (prefix || '') + Crypto.randomBytes(length).toString('hex');
     }
 
+    static buildKey(prefix, ...sub) {
+        var key = prefix;
+        if (sub && sub.length > 0) {
+            key += Constants.Keys.Seperator + sub.join(Constants.Keys.Seperator);
+        }
+        return key;
+    }
 }
 
 module.exports = Utilities;

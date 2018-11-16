@@ -20,6 +20,14 @@ module.exports = {
         CommandStartIndex: 0,
         SerializedStartIndex: 4,
         DataStartIndex: 6
+    },
+
+    Keys: {
+        Seperator: ':',
+        ServicePrefix: 'service',
+        MappingPrefix: 'mapping',
+        Any: '*',
+        HashName: 'Name'
     }
 
 };
