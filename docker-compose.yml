@@ -1,10 +1,39 @@
-version: '2.1'
+version: '3.5'
 
 services:
   verable.beacon:
     image: verable.beacon
-    build: .
+    container_name: verable_beacon
+    build: 
+      context: .
+      args: 
+        redis_endpoint: verable_redis
+        listen_port: 9009
     environment:
       NODE_ENV: production
     ports:
-      - 7001:7001
+      - 9009:9009
+    networks:
+      - verable_net
+    depends_on: 
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: verable_redis
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    ports:
+      - 6379:6379
+    networks:
+      - verable_net
+    volumes:
+      - redis-data:/data
+
+networks:
+  verable_net:
+    name: verable_net
+    driver: bridge
+
+volumes:
+  redis-data:
