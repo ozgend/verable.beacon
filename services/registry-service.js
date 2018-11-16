@@ -5,7 +5,7 @@ const AsyncRedis = require('async-redis');
 var redisClient;
 
 if (process.env.REDIS_ENDPOINT) {
-    redisClient = AsyncRedis.createClient('redis://' + process.env.REDIS);
+    redisClient = AsyncRedis.createClient('redis://' + process.env.REDIS_ENDPOINT);
 } else {
     redisClient = AsyncRedis.createClient();
 }
