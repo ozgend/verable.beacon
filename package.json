@@ -4,11 +4,17 @@
     "description": "verable beacon service",
     "main": "server.js",
     "scripts": {
+        "test": "nyc --reporter=text mocha",
         "start": "node server.js"
     },
     "author": "ozgend",
     "license": "MIT",
     "dependencies": {
         "async-redis": "^1.1.4"
+    },
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "mocha": "^5.2.0",
+        "nyc": "^13.1.0"
     }
 }

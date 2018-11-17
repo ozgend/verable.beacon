@@ -4,3 +4,4 @@ obj/
 node_modules/
 .vs/
 .DS_Store
+.nyc_output/

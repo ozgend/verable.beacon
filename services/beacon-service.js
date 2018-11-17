@@ -63,7 +63,7 @@ class BeaconService {
         var serialized = parseInt(stringified.substr(Constants.Parser.SerializedStartIndex, Constants.Parser.SerializedLength)) == 1;
         var data = stringified.substr(Constants.Parser.DataStartIndex);
 
-        var result = { command: command };
+        var result = { command: command, serialized: serialized, data: '' };
 
         if (serialized) {
             result.data = JSON.parse(data);
