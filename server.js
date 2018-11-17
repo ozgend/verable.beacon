@@ -6,36 +6,36 @@ const port = process.env.PORT || Constants.Port;
 var beaconService = new BeaconService();
 
 function onListen() {
-    console.log('listening on ', port);
+	console.log('listening on ', port);
 }
 
 function onConnection(socket) {
-    var clientEndpoint = socket.remoteAddress + ':' + socket.remotePort;
+	var clientEndpoint = socket.remoteAddress + ':' + socket.remotePort;
 
-    // console.log('[%s] connected', clientEndpoint);
+	// console.log('[%s] connected', clientEndpoint);
 
-    socket.on('data', async function(data) {
-        // console.log('[%s] -> %s', clientEndpoint, data);
+	socket.on('data', async function (data) {
+		// console.log('[%s] -> %s', clientEndpoint, data);
 
-        var processedResult = await beaconService.processReceived(data);
-        if (processedResult && processedResult !== undefined) {
-            var processedResponse = await beaconService.prepareSend(processedResult)
-            socket.write(processedResponse);
-        }
-        socket.end();
-    });
+		var processedResult = await beaconService.processReceived(data);
+		if (processedResult && processedResult !== undefined) {
+			var processedResponse = await beaconService.prepareSend(processedResult)
+			socket.write(processedResponse);
+		}
+		socket.end();
+	});
 
-    socket.on('end', function() {
-        // console.log('[%s] end', clientEndpoint);
-    });
+	socket.on('end', function () {
+		// console.log('[%s] end', clientEndpoint);
+	});
 
-    socket.on('close', function() {
-        // console.log('[%s] closed', clientEndpoint);
-    });
+	socket.on('close', function () {
+		// console.log('[%s] closed', clientEndpoint);
+	});
 
-    socket.on('error', function(err) {
-        console.log('[%s] error', clientEndpoint, err);
-    });
+	socket.on('error', function (err) {
+		console.log('[%s] error', clientEndpoint, err);
+	});
 };
 
 netSocket.createServer(onConnection).listen(Constants.Port, onListen);

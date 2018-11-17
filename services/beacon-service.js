@@ -15,6 +15,9 @@ class BeaconService {
             case Constants.Commands.DiscoverOne:
                 commandResult = await this.registryService.discoverOne(beaconData.data);
                 break;
+            case Constants.Commands.DiscoverN:
+                commandResult = await this.registryService.discoverN(beaconData.data);
+                break;
             case Constants.Commands.DiscoverAll:
                 commandResult = await this.registryService.discoverAll();
                 break;

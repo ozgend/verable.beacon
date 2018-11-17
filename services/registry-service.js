@@ -10,7 +10,7 @@ if (process.env.REDIS_ENDPOINT) {
     redisClient = AsyncRedis.createClient();
 }
 
-redisClient.on('error', function(err) {
+redisClient.on('error', function (err) {
     console.log('redisClient' + err);
 });
 
@@ -30,6 +30,31 @@ class RegistryService {
         return serviceDefinitionList;
     }
 
+    async discoverN(serviceNames) {
+        const serviceKey = Helper.buildKey(Constants.Keys.ServicePrefix, Constants.Keys.Any);
+        const serviceKeys = await redisClient.keys(serviceKey);
+        let serviceDefinitionList = [];
+
+        for (var i = 0; i < serviceKeys.length; i++) {
+            const key = serviceKeys[i];
+            const serviceName = key.match(/(:.+:)/gi).toString().replace(/:/gi,'');
+            
+            if (serviceNames.indexOf(serviceName) < 0) {
+                continue;
+            }
+
+            const raw = await redisClient.get(key);
+            serviceDefinitionList.push(JSON.parse(raw));
+        }
+
+        let serviceDefinitions = serviceDefinitionList.reduce(function (set, current) {
+            (set[current[Constants.Keys.HashName]] = set[current[Constants.Keys.HashName]] || []).push(current);
+            return set;
+        }, {});
+
+        return serviceDefinitions;
+    }
+
     async discoverAll() {
         const serviceKey = Helper.buildKey(Constants.Keys.ServicePrefix, Constants.Keys.Any);
         const serviceKeys = await redisClient.keys(serviceKey);
@@ -41,7 +66,7 @@ class RegistryService {
             serviceDefinitionList.push(JSON.parse(raw));
         }
 
-        let serviceDefinitions = serviceDefinitionList.reduce(function(set, current) {
+        let serviceDefinitions = serviceDefinitionList.reduce(function (set, current) {
             (set[current[Constants.Keys.HashName]] = set[current[Constants.Keys.HashName]] || []).push(current);
             return set;
         }, {});

@@ -6,6 +6,7 @@ var Constants = {
         Register: 'REG',
         Deregister: 'DRG',
         DiscoverOne: 'DS1',
+        DiscoverN: 'DSN',
         DiscoverAll: 'DSA',
         Heartbeat: 'HRB'
 
